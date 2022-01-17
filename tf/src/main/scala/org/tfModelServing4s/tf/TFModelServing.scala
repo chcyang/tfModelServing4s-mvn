@@ -13,7 +13,8 @@ import dsl._
 class TFModelServing extends ModelServing[Try] {
 
   type TModel = TFModel
-  type TTensor = Tensor
+  type JFloat = java.lang.Float
+  type TTensor = Tensor[JFloat]
 
   private def pathForSource(source: ModelSource): String = source match {
     case FileModelSource(path) => path
@@ -56,16 +57,16 @@ class TFModelServing extends ModelServing[Try] {
     ModelMetadata(signatures)
   }
 
-  private def run(model: TModel, output: TensorMetadata, feed: Map[TensorMetadata, TTensor]): Try[List[TTensor]] = Try {
-    val runner = feed.foldLeft(model.bundle.session.runner) { case (r, (tensorMeta, tensor)) =>
+  private def run(model: TModel, output: TensorMetadata, feed: Map[TensorMetadata, Tensor[JFloat]]): Try[List[TTensor]] = Try {
+    val runner = feed.foldLeft(model.bundle.session.runner) { case (r, (tensorMeta, tensor:Tensor[JFloat])) =>
       r.feed(tensorMeta.opName, tensor)
     }
 
-    runner.fetch(output.opName).run().asScala.toList
+    runner.fetch(output.opName).run().asScala.toList.map(_.asInstanceOf[TTensor])
   }
 
   def eval[TRepr](model: TModel, output: TensorMetadata, feed: Map[TensorMetadata, TTensor])
-                 (implicit D: TensorDecoder[Tensor, TRepr], C: Closeable[TTensor]): Try[TRepr] = {
+                 (implicit D: TensorDecoder[Tensor[JFloat], TRepr], C: Closeable[TTensor]): Try[TRepr] = {
     val tensorT = for {
       ts <- run(model, output, feed)
       t <- Try(ts.head)
