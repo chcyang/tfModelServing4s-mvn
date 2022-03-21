@@ -32,7 +32,7 @@ object Example1 {
             for {
               inputDef    <- Try { signature.inputs("x") }
               outputDef   <- Try { signature.outputs("z") }
-              outputArray <- serving.eval[Array[Array[Float]]](model, outputDef, Map(inputDef -> inputTensor))
+              outputArray <- serving.eval[Float,Array[Array[Float]]](model, outputDef, Map(inputDef -> inputTensor))
               _           =  println(s"output: ${shows(outputArray)}")
             } yield ()
           }

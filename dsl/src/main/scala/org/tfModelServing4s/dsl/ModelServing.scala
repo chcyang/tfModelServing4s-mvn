@@ -57,7 +57,7 @@ trait ModelServing[F[_]] {
     * @return A data structure representing an output tensor calculated by feeding a set
     *         of inputs into the model.
     */
-  def eval[TRepr](model: TModel, output: TensorMetadata, feed: Map[TensorMetadata, TTensor])
+  def eval[T,TRepr](model: TModel, output: TensorMetadata, feed: Map[TensorMetadata, TTensor])
                  (implicit D: TensorDecoder[TTensor, TRepr], C: Closeable[TTensor]): F[TRepr]
 
   /**

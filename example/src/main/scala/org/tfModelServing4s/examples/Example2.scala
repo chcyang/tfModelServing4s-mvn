@@ -44,7 +44,7 @@ object Example2 {
             for {
               inputDef    <- Try { signature.inputs("image_raw") }
               outputDef   <- Try { signature.outputs("probs") }
-              outputArray <- serving.eval[Array[Array[Float]]](model, outputDef, Map(inputDef -> inputTensor))
+              outputArray <- serving.eval[Float,Array[Array[Float]]](model, outputDef, Map(inputDef -> inputTensor))
               _           =  println(s"output: ${shows(outputArray)}")
               clazz       <- Try { probsToClass(outputArray.flatten) }
               _           = println(clazz)
