@@ -48,6 +48,24 @@ object implicits {
     }
   }
 
+  implicit  val floatTDimArrayDecoder : TensorDecoder[Tensor[_],AnyVal]=
+    new TensorDecoder[Tensor[_],AnyVal] {
+      override def fromTensor(tensor: Tensor[_]): AnyVal = {
+        val shape = tensor.shape().toList.map(_.toInt)
+        val array = tensor.numDimensions() match {
+          case 1 => Array.ofDim[Float](shape.head)
+          case 2 => Array.ofDim[Float](shape.head, shape(1))
+          case 3 => Array.ofDim[Float](shape.head, shape(1),shape(2))
+          case 4 => Array.ofDim[Float](shape.head, shape(1),shape(2),shape(3))
+          case 5 => Array.ofDim[Float](shape.head, shape(1),shape(2),shape(3),shape(4))
+        }
+
+        tensor.copyTo(array)
+        array.asInstanceOf[AnyVal]
+      }
+    }
+
+
   implicit val closeableTensor = new Closeable[Tensor[_]] {
 
     def close(resource: Tensor[_]): Unit = {
