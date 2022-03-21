@@ -23,4 +23,24 @@ object implicits {
 
   }
 
+  implicit def show3DimArray[A](implicit S1Dim: Show[Array[Array[A]]], S: Show[Array[String]])
+  = new Show[Array[Array[Array[A]]]] {
+
+    def shows(a: Array[Array[Array[A]]]) = S.shows(a.map(S1Dim.shows))
+
+  }
+
+  implicit def show4DimArray[A](implicit S1Dim: Show[Array[Array[Array[A]]]], S: Show[Array[String]])
+  = new Show[Array[Array[Array[Array[A]]]]] {
+
+    def shows(a: Array[Array[Array[Array[A]]]]) = S.shows(a.map(S1Dim.shows))
+
+  }
+
+  implicit def show5DimArray[A](implicit S1Dim: Show[Array[Array[Array[Array[A]]]]], S: Show[Array[String]])
+  = new Show[Array[Array[Array[Array[Array[A]]]]]] {
+
+    def shows(a: Array[Array[Array[Array[Array[A]]]]]) = S.shows(a.map(S1Dim.shows))
+
+  }
 }
